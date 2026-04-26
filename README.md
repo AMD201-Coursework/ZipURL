@@ -15,6 +15,4 @@ Mở dự án bằng Visual Studio, sau đó mở Package Manager
 - Chạy lệnh `Update-Database`
 
 ---
-# Git và GitHub
-
-- **Branch:** Không commit vào `main`. Tạo nhánh theo feature/tên-tính-năng hoặc fix/tên-lỗi, sau đó merge vào `develop` và test, sau khi ổn rồi mới push lên `main`.
+- **Branch:** Không commit vào `main`. Tạo nhánh theo feature/tên-tính-năng hoặc fix/tên-lỗi, sau đó merge vào `develop` và test, sau khi ổn rồi mới push lên `main`
