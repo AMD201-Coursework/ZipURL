@@ -1,0 +1,6 @@
+@ZipURL.Services.ShorterURL_HostAddress = http://localhost:5081
+
+GET {{ZipURL.Services.ShorterURL_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
