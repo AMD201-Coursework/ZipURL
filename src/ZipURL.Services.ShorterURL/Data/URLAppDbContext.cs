@@ -11,5 +11,12 @@ namespace ZipURL.Services.ShorterURL.Data
         }
 
         public DbSet<URLItem> URLItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<URLItem>()
+            .HasIndex(u => u.ShortCode)
+            .IsUnique();
+        }
     }
 }

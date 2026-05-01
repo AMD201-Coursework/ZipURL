@@ -47,10 +47,12 @@ namespace ZipURL.Services.ShorterURL.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShortCode")
+                        .IsUnique();
 
                     b.ToTable("URLItems");
                 });

@@ -12,8 +12,8 @@ using ZipURL.Services.ShorterURL.Data;
 namespace ZipURL.Services.ShorterURL.Migrations
 {
     [DbContext(typeof(URLAppDbContext))]
-    [Migration("20260426190644_InitialUrlDb")]
-    partial class InitialUrlDb
+    [Migration("20260501171715_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,10 +50,12 @@ namespace ZipURL.Services.ShorterURL.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShortCode")
+                        .IsUnique();
 
                     b.ToTable("URLItems");
                 });

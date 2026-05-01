@@ -8,18 +8,17 @@ namespace ZipURL.Services.ShorterURL.Models
         public int Id { get; set; }
 
         [Required]
+        [Url]
         public string OriginalUrl { get; set; } = string.Empty;
 
-        [Required]
         [StringLength(10)]
         public string ShortCode { get; set; } = string.Empty;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
 
         public int ClickCount { get; set; } = 0;
 
         [Required]
-        [StringLength(450)]
         public string UserId { get; set; } = string.Empty;
     }
 }

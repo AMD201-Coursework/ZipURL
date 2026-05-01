@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZipURL.Services.ShorterURL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialUrlDb : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,12 +21,18 @@ namespace ZipURL.Services.ShorterURL.Migrations
                     ShortCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ClickCount = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_URLItems", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_URLItems_ShortCode",
+                table: "URLItems",
+                column: "ShortCode",
+                unique: true);
         }
 
         /// <inheritdoc />
