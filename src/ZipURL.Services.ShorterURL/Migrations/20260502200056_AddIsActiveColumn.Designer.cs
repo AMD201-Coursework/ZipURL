@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZipURL.Services.ShorterURL.Data;
 
@@ -11,9 +12,11 @@ using ZipURL.Services.ShorterURL.Data;
 namespace ZipURL.Services.ShorterURL.Migrations
 {
     [DbContext(typeof(URLAppDbContext))]
-    partial class URLAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260502200056_AddIsActiveColumn")]
+    partial class AddIsActiveColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,15 +52,13 @@ namespace ZipURL.Services.ShorterURL.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ShortCode")
                         .IsUnique()
                         .HasFilter("[ShortCode] IS NOT NULL");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("URLItems");
                 });

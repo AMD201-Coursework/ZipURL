@@ -14,9 +14,18 @@ namespace ZipURL.Services.ShorterURL.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<URLItem>()
-            .HasIndex(u => u.ShortCode)
-            .IsUnique();
+            modelBuilder.Entity<URLItem>(entity =>
+            {
+
+                entity.HasIndex(e => e.UserId);
+
+                entity.HasIndex(u => u.ShortCode)
+                      .IsUnique();
+
+                entity.Property(u => u.ShortCode)
+                      .IsRequired(false)
+                      .HasMaxLength(10);
+            });
         }
     }
 }

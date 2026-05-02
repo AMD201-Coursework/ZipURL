@@ -7,12 +7,12 @@ namespace ZipURL.Services.ShorterURL.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required]  
         [Url]
         public string OriginalUrl { get; set; } = string.Empty;
 
         [StringLength(10)]
-        public string ShortCode { get; set; } = string.Empty;
+        public string? ShortCode { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
 
@@ -20,5 +20,6 @@ namespace ZipURL.Services.ShorterURL.Models
 
         [Required]
         public string UserId { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
     }
 }
