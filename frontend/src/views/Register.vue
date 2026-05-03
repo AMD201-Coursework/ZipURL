@@ -4,7 +4,7 @@
       <h2>Đăng ký</h2>
       <p class="sub">Tạo tài khoản miễn phí</p>
 
-      <input v-model="form.username" type="text" placeholder="Tên đăng nhập" />
+      <input v-model="form.displayName" type="text" placeholder="Tên hiển thị" />
       <input v-model="form.email" type="email" placeholder="Email" />
       <input v-model="form.password" type="password" placeholder="Mật khẩu" />
 
@@ -26,14 +26,17 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authApi } from '../api'
 
-const form = ref({ username: '', email: '', password: '' })
+const form = ref({ displayName: '', email: '', password: '' })
 const error = ref('')
 const success = ref('')
 const router = useRouter()
 
 async function register() {
   try {
-    await authApi.post('/auth/register', form.value)
+    const res = await authApi.post('/auth/register', form.value)
+    // Response trả về: UserId, Email, DisplayName, Role
+    localStorage.setItem('username', res.data.displayName)
+    localStorage.setItem('role', res.data.role)
     success.value = 'Đăng ký thành công! Đang chuyển hướng...'
     setTimeout(() => router.push('/login'), 1500)
   } catch (e) {

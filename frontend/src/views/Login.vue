@@ -29,17 +29,19 @@ const error = ref('')
 const router = useRouter()
 
 async function login() {
+  // GIẢ LẬP TẠM
   if (form.value.email === 'test@gmail.com' && form.value.password === '123456') {
-    localStorage.setItem('token', 'fake-token-123')
     localStorage.setItem('username', 'Test User')
+    localStorage.setItem('role', 'User')
     router.push('/')
     return
   }
 
   try {
     const res = await authApi.post('/auth/login', form.value)
-    localStorage.setItem('token', res.data.token)
-    localStorage.setItem('username', res.data.username)
+    // Token nằm trong cookie tự động, chỉ lưu thông tin user
+    localStorage.setItem('username', res.data.displayName)
+    localStorage.setItem('role', res.data.role)
     router.push('/')
   } catch (e) {
     error.value = e.response?.data?.message || 'Email hoặc mật khẩu không đúng'

@@ -79,11 +79,10 @@ const router = useRouter()
 
 // Kiểm tra đăng nhập khi vào trang
 onMounted(() => {
-  const token = localStorage.getItem('token')
   const savedUsername = localStorage.getItem('username')
-  if (token) {
+  if (savedUsername) {
     isLoggedIn.value = true
-    username.value = savedUsername || 'Người dùng'
+    username.value = savedUsername
     loadUrls()
   }
 })
@@ -135,13 +134,17 @@ function copyLink() {
 }
 
 // Đăng xuất
-function logout() {
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
-  isLoggedIn.value = false
-  username.value = ''
-  shortResult.value = ''
-  urls.value = []
+async function logout() {
+  try {
+    await authApi.post('/auth/logout') // gọi API logout để xóa cookie
+  } catch (e) {
+    console.log('Logout error:', e)
+  } finally {
+    localStorage.removeItem('username')
+    localStorage.removeItem('role')
+    isLoggedIn.value = false
+    username.value = ''
+  }
 }
 </script>
 
