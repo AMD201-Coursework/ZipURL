@@ -31,8 +31,10 @@ const router = useRouter()
 async function login() {
   // GIẢ LẬP TẠM
   if (form.value.email === 'test@gmail.com' && form.value.password === '123456') {
-    localStorage.setItem('username', 'Test User')
-    localStorage.setItem('role', 'User')
+    const res = await authApi.post('/auth/login', form.value)
+    localStorage.setItem('username', res.data.displayName)
+    localStorage.setItem('userId', res.data.userId)  // ← thêm dòng này
+    localStorage.setItem('role', res.data.role)
     router.push('/')
     return
   }
