@@ -80,7 +80,8 @@ const router = useRouter()
 // Kiểm tra đăng nhập khi vào trang
 onMounted(() => {
   const savedUsername = localStorage.getItem('username')
-  if (savedUsername) {
+  const savedUserId = localStorage.getItem('userId')
+  if (savedUsername && savedUserId) {
     isLoggedIn.value = true
     username.value = savedUsername
     loadUrls()
@@ -96,12 +97,27 @@ async function handleShorten() {
   if (!url.value) return
 
   try {
-    const res = await urlApi.post('/urls/shorten', { originalUrl: url.value })
-    shortResult.value = res.data.shortUrl
+    const userId = localStorage.getItem('userId')
+    const res = await urlApi.post('/shortcode', {
+      targetUrl: url.value,   // ← đúng field name
+      userId: userId           // ← gửi userId lên
+    })
+    shortResult.value = res.data.shortCode
     loadUrls()
     url.value = ''
   } catch (e) {
     alert('Rút gọn thất bại, thử lại!')
+  }
+}
+
+async function loadUrls() {
+  try {
+    const userId = localStorage.getItem('userId')
+    if (!userId) return
+    const res = await urlApi.get(`/shortcode/${userId}`)
+    urls.value = res.data
+  } catch (e) {
+    console.log('Lỗi load URLs:', e)
   }
 }
 
