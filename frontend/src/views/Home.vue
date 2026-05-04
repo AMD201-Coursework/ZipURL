@@ -66,7 +66,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { urlApi } from '../api'
+import { urlApi, authApi } from '../api'
 
 const url = ref('')
 const shortResult = ref('')
