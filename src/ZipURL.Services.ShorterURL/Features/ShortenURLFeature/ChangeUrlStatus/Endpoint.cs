@@ -6,7 +6,7 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.ChangeUrlStatus
     {
         public static void Map(IEndpointRouteBuilder group)
         {
-            // Đổi đường dẫn thành /status để rõ nghĩa là cập nhật trạng thái
+            // /status
             group.MapPatch("/{id}/status", async (int id, URLAppDbContext db) =>
             {
                 var urlItem = await db.URLItems.FindAsync(id);
@@ -16,19 +16,19 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.ChangeUrlStatus
                     return Results.NotFound(new { message = "Not Found." });
                 }
 
-                // Logic vẫn là đảo trạng thái (Toggle) nhưng tên biến rõ ràng hơn
-                bool trangThaiMoi = !urlItem.IsActive;
-                urlItem.IsActive = trangThaiMoi;
+                // Logic 
+                bool newStatus = !urlItem.IsActive;
+                urlItem.IsActive = newStatus;
 
                 await db.SaveChangesAsync();
 
-                string thongBao = trangThaiMoi ? "Url activated successfully" : "Url deactivated successfully";
+                string notice = newStatus ? "Url activated successfully" : "Url deactivated successfully";
 
                 return Results.Ok(new
                 {
                     id = urlItem.Id,
                     isActive = urlItem.IsActive,
-                    message = thongBao
+                    message = notice
                 });
             })
             .WithName("UpdateUrlActiveStatus");

@@ -12,5 +12,11 @@ services:
     volumes:
       - url_db_data:/var/opt/mssql
 
+  redis-cache:
+    image: redis:alpine
+    container_name: zipurl-redis
+    ports:
+      - "6379:6379"
+
 volumes:
   url_db_data:

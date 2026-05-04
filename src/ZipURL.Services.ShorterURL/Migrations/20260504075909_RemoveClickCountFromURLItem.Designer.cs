@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZipURL.Services.ShorterURL.Data;
 
@@ -11,9 +12,11 @@ using ZipURL.Services.ShorterURL.Data;
 namespace ZipURL.Services.ShorterURL.Migrations
 {
     [DbContext(typeof(URLAppDbContext))]
-    partial class URLAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260504075909_RemoveClickCountFromURLItem")]
+    partial class RemoveClickCountFromURLItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
