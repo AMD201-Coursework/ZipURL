@@ -121,27 +121,6 @@ async function loadUrls() {
   }
 }
 
-// Trong loadUrls
-async function loadUrls() {
-  try {
-    const res = await urlApi.get('/urls')
-    urls.value = res.data
-  } catch (e) {
-    console.log('Lỗi load URLs:', e)
-  }
-}
-
-// Load danh sách URL
-async function loadUrls() {
-  try {
-    // --- CODE THẬT (bỏ comment khi Tín làm xong) ---
-    // const res = await api.get('/urls')
-    // urls.value = res.data
-  } catch (e) {
-    console.log('Chưa có backend')
-  }
-}
-
 // Copy link
 function copyLink() {
   navigator.clipboard.writeText(shortResult.value)
