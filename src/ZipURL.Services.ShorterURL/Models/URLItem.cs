@@ -16,7 +16,7 @@ namespace ZipURL.Services.ShorterURL.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
 
-        public int ClickCount { get; set; } = 0;
+        //public int ClickCount { get; set; } = 0;
 
         [Required]
         public string UserId { get; set; } = string.Empty;

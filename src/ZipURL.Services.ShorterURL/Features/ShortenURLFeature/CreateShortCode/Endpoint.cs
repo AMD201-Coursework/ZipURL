@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using ZipURL.Services.ShorterURL.Data;
 using ZipURL.Services.ShorterURL.Helpers;
 using ZipURL.Services.ShorterURL.Models;
@@ -11,21 +11,51 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
     public class Endpoint
     {
         public static void Map(IEndpointRouteBuilder group)
-        {
+        {   //  Define post "/" 
             group.MapPost("/", async (CreateShortCodeRequest req, URLAppDbContext db,
+                IDistributedCache cache,
                 [FromServices] IHttpClientFactory httpClientFactory) =>
             {
-                // 1. Validation cú pháp cơ bản
+                // Format url check
                 if (string.IsNullOrWhiteSpace(req.TargetUrl) || !Uri.TryCreate(req.TargetUrl, UriKind.Absolute, out var uriResult))
                 {
                     return Results.BadRequest(new { message = "Invalid URL format." });
                 }
 
-                // 2. Gửi HEAD Request để check xem link có thực sự tồn tại không
+
+
+                // --- 2. CHECK REDIS NGAY TỪ ĐẦU (Sử dụng URL dài làm Key) ---
+                // Ta thêm tiền tố "origin:" để phân biệt với Key của mã ngắn
+                string originKey = $"origin:{req.TargetUrl}";
+                string existingShortCode = await cache.GetStringAsync(originKey);
+
+                if (!string.IsNullOrEmpty(existingShortCode))
+                {
+                    // Nếu Redis đã có, trả về luôn mã ngắn đó
+                    return Results.Conflict(new
+                    {
+                        message = "You have already shortened this URL (cache).",
+                        shortCode = existingShortCode
+                    });
+                }
+
+                // 3. CHECK DATABASE (Nếu Redis chưa có, phòng hờ DB vẫn có)
+                //var existingLink = await db.URLItems.FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl);
+                //if (existingLink != null)
+                //{
+                //    // Nếu thấy trong DB, tranh thủ nạp lại vào Redis cho lần sau
+                //    await cache.SetStringAsync(originKey, existingLink.ShortCode, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) });
+
+                //    return Results.Conflict(new { message = "You have already shortened this URL.", shortCode = existingLink.ShortCode });
+                //}
+
+
+
+                // Send HEAD res to check the url
                 try
                 {
                     var client = httpClientFactory.CreateClient();
-                    client.Timeout = TimeSpan.FromSeconds(5); // Chỉ đợi tối đa 5 giây
+                    client.Timeout = TimeSpan.FromSeconds(5); // timeout
 
                     var request = new HttpRequestMessage(HttpMethod.Head, req.TargetUrl);
                     var responseCheck = await client.SendAsync(request);
@@ -40,12 +70,12 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                     return Results.BadRequest(new { message = "Could not verify the URL. Please check if the link is correct." });
                 }
 
-                // 1. Validation
-                var existingLink = await db.URLItems
-                    .FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl && x.UserId == req.UserId);
+                // Duplicate check
+                var existingLink = await db.URLItems.FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl && x.UserId == req.UserId);
 
                 if (existingLink != null)
                 {
+                    // Return 409 Conflict and old ShortCode 
                     return Results.Conflict(new
                     {
                         message = "You have already shortened this URL.",
@@ -54,13 +84,15 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                 }
 
 
-                // 2. Create first Entity with null ShortCode
+
+
+                // Create first entity
                 var urlItem = new URLItem
                 {
                     OriginalUrl = req.TargetUrl,
                     UserId = req.UserId,
                     CreatedAt = DateTime.UtcNow,
-                    ClickCount = 0,
+                    //ClickCount = 0,
                     ShortCode = null,
                 };
 

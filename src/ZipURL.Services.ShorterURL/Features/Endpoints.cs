@@ -1,5 +1,4 @@
-﻿using ZipURL.Services.ShorterURL.Features.ShortenURLFeature;
-namespace ZipURL.Services.ShorterURL.Features
+﻿namespace ZipURL.Services.ShorterURL.Features
 {
     public static class Endpoints
     {
@@ -7,12 +6,17 @@ namespace ZipURL.Services.ShorterURL.Features
         {
             var group = app.MapGroup("/api/shortcode");
 
-            // Gọi Map của Feature Create
+            // Create
             ShortenURLFeature.CreateShortCode.Endpoint.Map(group);
 
+            // Get URLs 
             ShortenURLFeature.GetUserURLs.Endpoint.Map(group);
 
+            // Change Url Status 
             ShortenURLFeature.ChangeUrlStatus.Endpoint.Map(group);
+
+            // Redirect
+            ShortenURLFeature.Redirect.Endpoint.Map(app);
 
             return app;
         }
