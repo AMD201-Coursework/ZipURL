@@ -17,7 +17,7 @@ builder.Services.Configure<JwtOptions>(
 
 // ===== Database =====
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ===== Services =====
