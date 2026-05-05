@@ -6,13 +6,28 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database SQL Server 
 builder.Services.AddDbContext<URLAppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Redis
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZipURL_";
+});
+
+// ===== CORS =====
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();  // B?T BU?C cho cookie cross-origin
+    });
 });
 
 // Add services to the container.
@@ -34,7 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
+app.UseCors("frontend");
 app.UseAuthorization();
 
 app.MapControllers();
