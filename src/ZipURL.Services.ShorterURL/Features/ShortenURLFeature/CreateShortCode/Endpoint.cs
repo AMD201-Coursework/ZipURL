@@ -39,18 +39,6 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                     });
                 }
 
-                // 3. CHECK DATABASE (Nếu Redis chưa có, phòng hờ DB vẫn có)
-                //var existingLink = await db.URLItems.FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl);
-                //if (existingLink != null)
-                //{
-                //    // Nếu thấy trong DB, tranh thủ nạp lại vào Redis cho lần sau
-                //    await cache.SetStringAsync(originKey, existingLink.ShortCode, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) });
-
-                //    return Results.Conflict(new { message = "You have already shortened this URL.", shortCode = existingLink.ShortCode });
-                //}
-
-
-
                 // Send HEAD res to check the url
                 try
                 {
@@ -83,16 +71,12 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                     });
                 }
 
-
-
-
                 // Create first entity
                 var urlItem = new URLItem
                 {
                     OriginalUrl = req.TargetUrl,
                     UserId = req.UserId,
                     CreatedAt = DateTime.UtcNow,
-                    //ClickCount = 0,
                     ShortCode = null,
                 };
 
