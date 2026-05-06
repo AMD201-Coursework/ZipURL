@@ -6,7 +6,7 @@
 /// </summary>
 public class AuthResponse
 {
-    public string UserId { get; set; } = default!;
+    public int UserId { get; set; } = default!;
     public string Email { get; set; } = default!;
     public string DisplayName { get; set; } = default!;
     public string Role { get; set; } = default!;

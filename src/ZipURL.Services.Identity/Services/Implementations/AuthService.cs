@@ -49,7 +49,6 @@ public class AuthService : IAuthService
         // 2. Tạo user mới
         var user = new User
         {
-            Id = Guid.NewGuid(),
             Email = request.Email.Trim().ToLower(),
             DisplayName = request.DisplayName.Trim(),
             Role = "User"
@@ -162,7 +161,7 @@ public class AuthService : IAuthService
         // Tạo response
         var response = new AuthResponse
         {
-            UserId = user.Id.ToString(),
+            UserId = user.Id,
             Email = user.Email,
             DisplayName = user.DisplayName,
             Role = user.Role,
