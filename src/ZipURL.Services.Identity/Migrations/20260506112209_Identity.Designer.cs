@@ -12,8 +12,8 @@ using ZipURL.Services.Identity.Data;
 namespace ZipURL.Services.Identity.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260505064435_NewDB")]
-    partial class NewDB
+    [Migration("20260506112209_Identity")]
+    partial class Identity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,8 +45,8 @@ namespace ZipURL.Services.Identity.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -57,9 +57,11 @@ namespace ZipURL.Services.Identity.Migrations
 
             modelBuilder.Entity("ZipURL.Services.Identity.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");

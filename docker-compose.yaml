@@ -1,22 +1,69 @@
-version: "3.8"
-
 services:
-  url-db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: url_sql_server
-    ports:
-      - "1433:1433"
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=ZipURL@Password123
-    volumes:
-      - url_db_data:/var/opt/mssql
-
+  # =========================
+  # REDIS CACHE
+  # =========================
   redis-cache:
     image: redis:alpine
     container_name: zipurl-redis
     ports:
       - "6379:6379"
+    restart: unless-stopped
 
-volumes:
-  url_db_data:
+  # =========================
+  # IDENTITY SERVICE
+  # =========================
+  identity-service:
+    container_name: zipurl-identity-service
+    build:
+      context: .
+      dockerfile: src/ZipURL.Services.Identity/Dockerfile
+    ports:
+      - "7030:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: "Host=${NEON_HOST};Port=${NEON_PORT};Database=${IDENTITY_DB_NAME};Username=${NEON_USERNAME};Password=${NEON_PASSWORD};SSL Mode=Require;Channel Binding=Require"
+
+      Jwt__Issuer: "IdentityService"
+      Jwt__Audience: "ShortLinkClients"
+      Jwt__Key: "SuperSecretKey_AtLeast32Characters_Long_12345"
+      Jwt__AccessTokenMinutes: "15"
+      Jwt__RefreshTokenDays: "7"
+
+      Redis__ConnectionString: "redis-cache:6379"
+
+      AllowedOrigins__0: "http://localhost:3000"
+      AllowedOrigins__1: "https://localhost:3000"
+      AllowedOrigins__2: "http://localhost:5173"
+      AllowedOrigins__3: "https://localhost:5173"
+    depends_on:
+      redis-cache:
+        condition: service_started
+    restart: unless-stopped
+
+  # =========================
+  # SHORTER URL SERVICE
+  # =========================
+  shorterurl-service:
+    container_name: zipurl-shorterurl-service
+    build:
+      context: .
+      dockerfile: src/ZipURL.Services.ShorterURL/Dockerfile
+    ports:
+      - "7031:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: "Host=${NEON_HOST};Port=${NEON_PORT};Database=${SHORTER_DB_NAME};Username=${NEON_USERNAME};Password=${NEON_PASSWORD};SSL Mode=Require;Channel Binding=Require"
+
+      Jwt__Issuer: "IdentityService"
+      Jwt__Audience: "ShortLinkClients"
+      Jwt__Key: "SuperSecretKey_AtLeast32Characters_Long_12345"
+
+      Redis__ConnectionString: "redis-cache:6379"
+    depends_on:
+      redis-cache:
+        condition: service_started
+    restart: unless-stopped
