@@ -17,7 +17,18 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZipURL_";
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend1", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();  // B?T BU?C cho cookie cross-origin
+    });
+});
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new ArgumentNullException("JWT Key is missing");
 builder.Services.AddAuthentication(options =>
 {
@@ -56,18 +67,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(); // Thêm dòng này
 
 // ===== CORS =====
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("frontend", policy =>
-    {
-        policy
-            .WithOrigins(
-                "http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();  // B?T BU?C cho cookie cross-origin
-    });
-});
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -78,8 +78,6 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-app.MapShorterURLEndpoints();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -89,7 +87,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("frontend");
+app.UseCors("frontend1");
 
 app.UseAuthentication(); // PHẢI NẰM TRƯỚC UseAuthorization
 app.UseAuthorization();

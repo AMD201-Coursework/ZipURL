@@ -102,7 +102,7 @@ onMounted(() => {
   if (savedUsername && savedUserId) {
     isLoggedIn.value = true
     username.value = savedUsername
-    loadUrls()
+    // loadUrls()
   }
 })
 
@@ -119,7 +119,7 @@ async function handleShorten() {
   loading.value = true
   try {
     const userId = localStorage.getItem('userId')
-    const res = await urlApi.post('/shortcode', {
+    const res = await urlApi.post('/shortcode/', {
       TargetUrl: url.value.trim(),
       UserId: userId   // <-- đảm bảo đúng tên field mà backend expect
     })
