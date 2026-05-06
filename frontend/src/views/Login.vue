@@ -40,19 +40,10 @@ const error = ref('')
 const router = useRouter()
 
 async function login() {
-  // GIẢ LẬP TẠM
-  if (form.value.email === 'test@gmail.com' && form.value.password === '123456') {
-    const res = await authApi.post('/auth/login', form.value)
-    localStorage.setItem('username', res.data.displayName)
-    localStorage.setItem('userId', res.data.userId)
-    localStorage.setItem('role', res.data.role)
-    router.push('/')
-    return
-  }
-
   try {
     const res = await authApi.post('/auth/login', form.value)
     localStorage.setItem('username', res.data.displayName)
+    localStorage.setItem('userId', res.data.userId) 
     localStorage.setItem('role', res.data.role)
     router.push('/')
   } catch (e) {

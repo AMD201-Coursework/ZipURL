@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ZipURL.Services.ShorterURL.Data;
 using ZipURL.Services.ShorterURL.Features;
 
@@ -22,8 +22,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:5173",
-                "https://localhost:3000")
+                "http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();  // B?T BU?C cho cookie cross-origin
@@ -51,8 +50,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("frontend");
-app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
