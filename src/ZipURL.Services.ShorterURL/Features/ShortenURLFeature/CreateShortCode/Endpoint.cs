@@ -24,12 +24,6 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
             {
                 // --- 1. LẤY USERID TỪ CLAIMS ---
                 var userId = req.UserId;
-                //     ?? user.FindFirstValue("sub");
-                //if (string.IsNullOrEmpty(userId))
-                //{
-                //    Console.WriteLine(userId);
-                //    return Results.Unauthorized(); // Trả về 401 nếu không tìm thấy ID trong Token
-                //}
 
                 // 2. Format url check
                 if (string.IsNullOrWhiteSpace(req.TargetUrl) || !Uri.TryCreate(req.TargetUrl, UriKind.Absolute, out var uriResult))
@@ -38,17 +32,17 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                 }
 
                 // 3. CHECK REDIS (Dùng URL dài làm Key để tránh duplicate cache)
-                //string originKey = $"origin:{req.TargetUrl}";
-                //string existingShortCode = await cache.GetStringAsync(originKey);
+                string originKey = $"origin:{req.TargetUrl}";
+                string existingShortCode = await cache.GetStringAsync(originKey);
 
-                //if (!string.IsNullOrEmpty(existingShortCode))
-                //{
-                //    return Results.Conflict(new
-                //    {
-                //        message = "You have already shortened this URL (cache).",
-                //        shortCode = existingShortCode
-                //    });
-                //}
+                if (!string.IsNullOrEmpty(existingShortCode))
+                {
+                    return Results.Conflict(new
+                    {
+                        message = "You have already shortened this URL (cache).",
+                        shortCode = existingShortCode
+                    });
+                }
 
                 // 4. Kiểm tra URL tồn tại (HEAD request)
                 try
