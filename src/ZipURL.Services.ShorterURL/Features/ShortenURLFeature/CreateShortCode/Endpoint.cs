@@ -11,97 +11,6 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
 {
     public class Endpoint
     {
-        //public static void Map(IEndpointRouteBuilder group)
-        //{   //  Define post "/" 
-        //    group.MapPost("/", async (CreateShortCodeRequest req, URLAppDbContext db,
-        //        IDistributedCache cache, ClaimsPrincipal user,
-        //        [FromServices] IHttpClientFactory httpClientFactory) =>
-        //    {
-        //        // Format url check
-        //        if (string.IsNullOrWhiteSpace(req.TargetUrl) || !Uri.TryCreate(req.TargetUrl, UriKind.Absolute, out var uriResult))
-        //        {
-        //            return Results.BadRequest(new { message = "Invalid URL format." });
-        //        }
-
-
-
-            //        // --- 2. CHECK REDIS NGAY TỪ ĐẦU (Sử dụng URL dài làm Key) ---
-            //        // Ta thêm tiền tố "origin:" để phân biệt với Key của mã ngắn
-            //        string originKey = $"origin:{req.TargetUrl}";
-            //        string existingShortCode = await cache.GetStringAsync(originKey);
-
-            //        if (!string.IsNullOrEmpty(existingShortCode))
-            //        {
-            //            // Nếu Redis đã có, trả về luôn mã ngắn đó
-            //            return Results.Conflict(new
-            //            {
-            //                message = "You have already shortened this URL (cache).",
-            //                shortCode = existingShortCode
-            //            });
-            //        }
-
-            //        // Send HEAD res to check the url
-            //        try
-            //        {
-            //            var client = httpClientFactory.CreateClient();
-            //            client.Timeout = TimeSpan.FromSeconds(5); // timeout
-
-            //            var request = new HttpRequestMessage(HttpMethod.Head, req.TargetUrl);
-            //            var responseCheck = await client.SendAsync(request);
-
-            //            if (!responseCheck.IsSuccessStatusCode)
-            //            {
-            //                return Results.BadRequest(new { message = "The URL provided does not exist or is unreachable." });
-            //            }
-            //        }
-            //        catch (Exception)
-            //        {
-            //            return Results.BadRequest(new { message = "Could not verify the URL. Please check if the link is correct." });
-            //        }
-
-            //        // Duplicate check
-            //        var existingLink = await db.URLItems.FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl && x.UserId == req.UserId);
-
-            //        if (existingLink != null)
-            //        {
-            //            // Return 409 Conflict and old ShortCode 
-            //            return Results.Conflict(new
-            //            {
-            //                message = "You have already shortened this URL.",
-            //                shortCode = existingLink.ShortCode
-            //            });
-            //        }
-
-            //        // Create first entity
-            //        var urlItem = new URLItem
-            //        {
-            //            OriginalUrl = req.TargetUrl,
-            //            UserId = req.UserId,
-            //            CreatedAt = DateTime.UtcNow,
-            //            ShortCode = null,
-            //        };
-
-            //        // Save to get an Id
-            //        db.URLItems.Add(urlItem);
-            //        await db.SaveChangesAsync();
-
-            //        // Use Helper Hashids to create ShortCode
-            //        urlItem.ShortCode = HashidHelper.Encode(urlItem.Id);
-
-            //        // Save with ShortCode
-            //        await db.SaveChangesAsync();
-
-            //        // Return DTO 
-            //        var response = new CreateShortCodeResponse(
-            //            urlItem.ShortCode,
-            //            urlItem.OriginalUrl,
-            //            urlItem.CreatedAt
-            //        );
-
-            //        return Results.Created($"/api/shortcode/{urlItem.ShortCode}", response);
-            //    })
-            //    .WithName("CreateShortLink");
-            //}
 
         public static void Map(IEndpointRouteBuilder group)
         {
@@ -114,7 +23,8 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                 [FromServices] IHttpClientFactory httpClientFactory) =>
             {
                 // --- 1. LẤY USERID TỪ CLAIMS ---
-                var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? user.FindFirstValue("sub");
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Results.Unauthorized(); // Trả về 401 nếu không tìm thấy ID trong Token
@@ -153,19 +63,19 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                 }
                 catch { /* Log error if needed */ }
 
-                // 5. Kiểm tra trùng lặp trong Database (Dùng userId từ Token)
-                var existingLink = await db.URLItems.FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl && x.UserId == userId);
+                var existingLink = await db.URLItems
+            .FirstOrDefaultAsync(x => x.OriginalUrl == req.TargetUrl && x.UserId == userId);
 
                 if (existingLink != null)
                 {
                     return Results.Conflict(new { message = "Already shortened.", shortCode = existingLink.ShortCode });
                 }
 
-                // 6. Tạo thực thể mới
+                // 6. Tạo thực thể (Gán userId vào đây)
                 var urlItem = new URLItem
                 {
                     OriginalUrl = req.TargetUrl,
-                    UserId = userId, // Gán userId từ Token
+                    UserId = userId,
                     CreatedAt = DateTime.UtcNow,
                     ShortCode = null,
                 };
@@ -173,16 +83,14 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                 db.URLItems.Add(urlItem);
                 await db.SaveChangesAsync();
 
-                // 7. Hashids Encoding
                 urlItem.ShortCode = HashidHelper.Encode(urlItem.Id);
                 await db.SaveChangesAsync();
 
-                // 8. Trả về kết quả
-                var response = new CreateShortCodeResponse(urlItem.ShortCode, urlItem.OriginalUrl, urlItem.CreatedAt);
-                return Results.Created($"/api/shortcode/{urlItem.ShortCode}", response);
+                return Results.Created($"/api/shortcode/{urlItem.ShortCode}",
+                    new CreateShortCodeResponse(urlItem.ShortCode, urlItem.OriginalUrl, urlItem.CreatedAt));
             })
-            .WithName("CreateShortLink")
-            .RequireAuthorization(); // Quan trọng: Bắt buộc phải có Auth
+    .WithName("CreateShortLink")
+    .RequireAuthorization();
         }
     }
 }
