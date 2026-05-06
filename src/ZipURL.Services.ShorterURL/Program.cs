@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 using ZipURL.Services.ShorterURL.Data;
 using ZipURL.Services.ShorterURL.Features;
@@ -93,5 +94,13 @@ app.UseAuthentication(); // PHẢI NẰM TRƯỚC UseAuthorization
 app.UseAuthorization();
 
 app.MapShorterURLEndpoints();
+
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<URLAppDbContext>();
+    dbContext.Database.Migrate();
+}
+
 app.Run();
