@@ -24,7 +24,8 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:5173")
+                "http://localhost:5173",
+                "https://zip-url-app.vercel.app")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();  // B?T BU?C cho cookie cross-origin

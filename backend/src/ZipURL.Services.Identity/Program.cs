@@ -38,10 +38,11 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "http://localhost:5173",
-                "https://localhost:3000")
+                "https://localhost:3000",
+                "https://zip-url-app.vercel.app")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();  // BẮT BUỘC cho cookie cross-origin
+            .AllowCredentials();
     });
 });
 
