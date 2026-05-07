@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using ZipURL.Services.Identity.Common;
 using ZipURL.Services.Identity.Data;
 using ZipURL.Services.Identity.Models;
@@ -111,9 +111,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
+// move UseHttpsRedirection  from 117 to here
 }
-
-app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseCors("frontend");
