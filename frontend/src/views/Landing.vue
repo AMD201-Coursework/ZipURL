@@ -3,14 +3,14 @@
 
     <!-- NAVBAR -->
     <nav class="navbar">
-      <div class="nav-logo">🔗 ShortLinkTKT</div>
+      <div class="nav-logo">🔗ShortLinkTKT</div>
       <div class="nav-links">
-        <!-- Chưa đăng nhập: hiện 2 nút -->
+        <!-- Not logged in: show 2 buttons -->
         <template v-if="!isLoggedIn">
-          <router-link to="/login" class="btn-outline">Đăng nhập</router-link>
-          <router-link to="/register" class="btn-primary">Đăng ký miễn phí</router-link>
+          <router-link to="/login" class="btn-outline">Login</router-link>
+          <router-link to="/register" class="btn-primary">Sign Up for Free</router-link>
         </template>
-        <!-- Đã đăng nhập: hiện avatar + tên -->
+        <!-- Logged in: show avatar + name -->
         <template v-else>
           <div class="user-badge">
             <div class="avatar">{{ username.charAt(0).toUpperCase() }}</div>
@@ -23,32 +23,32 @@
     <!-- HERO SECTION -->
     <section class="hero-section">
       <div class="hero-content">
-        <div class="badge">✨ Rút gọn link miễn phí</div>
-        <h1>Rút gọn URL<br /><span class="gradient-text">nhanh chóng & thông minh</span></h1>
+        <div class="badge"> Free URL shortener</div>
+        <h1>Shorten URLs<br /><span class="gradient-text">fast & smart</span></h1>
         <p>
-          Chuyển đổi những đường link dài thành link ngắn gọn, dễ nhớ và dễ chia sẻ
-          trên mọi nền tảng. Theo dõi lượt click realtime.
+          Transform long links into short, memorable, and easy-to-share URLs
+          across every platform. Track clicks in real time.
         </p>
         <div class="hero-actions">
-          <!-- Đã đăng nhập: chỉ hiện nút Bắt đầu -> /home -->
+          <!-- Logged in: show Get Started -> /home -->
           <template v-if="isLoggedIn">
-            <router-link to="/home" class="cta-btn">🚀 Bắt đầu ngay</router-link>
+            <router-link to="/home" class="cta-btn"> Get Started</router-link>
           </template>
-          <!-- Chưa đăng nhập: hiện cả 2 nút -->
+          <!-- Not logged in: show both buttons -->
           <template v-else>
-            <router-link to="/register" class="cta-btn">🚀 Bắt đầu miễn phí</router-link>
-            <router-link to="/login" class="cta-btn-ghost">Đăng nhập</router-link>
+            <router-link to="/register" class="cta-btn"> Start for Free</router-link>
+            <router-link to="/login" class="cta-btn-ghost">Login</router-link>
           </template>
         </div>
         <!-- Demo visual -->
         <div class="demo-box">
           <div class="demo-row">
-            <span class="demo-label">🔗 URL gốc</span>
+            <span class="demo-label"> Original URL</span>
             <span class="demo-url long">https://example.com/very/long/path/to/some/page?ref=social&campaign=summer2024</span>
           </div>
           <div class="demo-arrow">↓</div>
           <div class="demo-row">
-            <span class="demo-label">✂️ Sau rút gọn</span>
+            <span class="demo-label"> Shortened</span>
             <span class="demo-url short">shortlnk.io/aB3xZ</span>
           </div>
         </div>
@@ -57,41 +57,41 @@
 
     <!-- HOW IT WORKS -->
     <section class="how-section">
-      <h2>Cách sử dụng</h2>
-      <p class="section-sub">Chỉ 3 bước đơn giản</p>
+      <h2>How It Works</h2>
+      <p class="section-sub">Just 3 simple steps</p>
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-num">1</div>
-          <h3>Đăng ký tài khoản</h3>
-          <p>Tạo tài khoản miễn phí chỉ với email và mật khẩu.</p>
+          <h3>Create an account</h3>
+          <p>Sign up for free with just your email and password.</p>
         </div>
         <div class="step-arrow">→</div>
         <div class="step-card">
           <div class="step-num">2</div>
-          <h3>Dán URL cần rút gọn</h3>
-          <p>Copy link dài và dán vào ô nhập trên trang chủ.</p>
+          <h3>Paste your long URL</h3>
+          <p>Copy your long link and paste it into the input field on the home page.</p>
         </div>
         <div class="step-arrow">→</div>
         <div class="step-card">
           <div class="step-num">3</div>
-          <h3>Nhận & chia sẻ link</h3>
-          <p>Copy link ngắn và chia sẻ lên mạng xã hội, tin nhắn.</p>
+          <h3>Get & share your link</h3>
+          <p>Copy your short link and share it on social media or messaging apps.</p>
         </div>
       </div>
     </section>
 
     <!-- CTA SECTION -->
     <section class="cta-section">
-      <h2>Sẵn sàng bắt đầu?</h2>
-      <p>Đăng ký miễn phí ngay hôm nay và rút gọn link đầu tiên của bạn!</p>
-      <router-link v-if="isLoggedIn" to="/home" class="cta-btn-white">🚀 Bắt đầu ngay</router-link>
-      <router-link v-else to="/register" class="cta-btn-white">🚀 Tạo tài khoản miễn phí</router-link>
+      <h2>Ready to get started?</h2>
+      <p>Sign up for free today and shorten your first link!</p>
+      <router-link v-if="isLoggedIn" to="/home" class="cta-btn-white"> Get Started</router-link>
+      <router-link v-else to="/register" class="cta-btn-white"> Create a Free Account</router-link>
     </section>
 
     <!-- FOOTER -->
     <footer class="footer">
       <div class="footer-logo">🔗 ShortLink</div>
-      <p>© 2024 ShortLink. Tất cả quyền được bảo lưu.</p>
+      <p>© 2024 ShortLink. All rights reserved.</p>
     </footer>
 
   </div>

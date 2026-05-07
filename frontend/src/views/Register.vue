@@ -7,26 +7,26 @@
         <span class="logo-text">ShortLink</span>
       </div>
 
-      <h2>Đăng ký</h2>
-      <p class="sub">Tạo tài khoản miễn phí ngay hôm nay</p>
+      <h2>Sign Up</h2>
+      <p class="sub">Create your free account today</p>
 
       <div class="form-group">
-        <label>Tên hiển thị</label>
-        <input v-model="form.displayName" type="text" placeholder="Nhập tên của bạn" />
+        <label>Display Name</label>
+        <input v-model="form.displayName" type="text" placeholder="Enter your name" />
       </div>
 
       <div class="form-group">
         <label>Email</label>
-        <input v-model="form.email" type="email" placeholder="Nhập email của bạn" />
+        <input v-model="form.email" type="email" placeholder="Enter your email" />
       </div>
 
       <div class="form-group">
-        <label>Mật khẩu</label>
+        <label>Password</label>
         <div class="password-wrapper">
           <input
             v-model="form.password"
             :type="showPassword ? 'text' : 'password'"
-            placeholder="Nhập mật khẩu"
+            placeholder="Enter your password"
           />
           <button type="button" class="eye-btn" @click="showPassword = !showPassword">
             <span v-if="showPassword">👁️</span>
@@ -36,21 +36,21 @@
       </div>
 
       <div v-if="error" class="error">⚠️ {{ error }}</div>
-      <div v-if="success" class="success">✅ {{ success }}</div>
+      <div v-if="success" class="success">{{ success }}</div>
 
       <button class="btn-primary" @click="register" :disabled="loading">
         <span v-if="loading" class="spinner"></span>
-        <span>{{ loading ? 'Đang đăng ký...' : 'Đăng ký' }}</span>
+        <span>{{ loading ? 'Signing up...' : 'Sign Up' }}</span>
       </button>
 
       <p class="switch">
-        Đã có tài khoản?
-        <router-link to="/login">Đăng nhập</router-link>
+        Already have an account?
+        <router-link to="/login">Login</router-link>
       </p>
 
       <div class="divider"></div>
 
-      <router-link to="/" class="btn-home">← Quay về trang chủ</router-link>
+      <router-link to="/" class="btn-home">← Back to Home</router-link>
     </div>
   </div>
 </template>
@@ -75,10 +75,10 @@ async function register() {
     const res = await authApi.post('/auth/register', form.value)
     localStorage.setItem('username', res.data.displayName)
     localStorage.setItem('role', res.data.role)
-    success.value = 'Đăng ký thành công! Đang chuyển hướng...'
+    success.value = 'Registration successful! Redirecting...'
     setTimeout(() => router.push('/login'), 1500)
-  } catch (e) {                                            // ← thêm catch(e)
-    error.value = e.response?.data?.message || 'Đăng ký thất bại, thử lại!'
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Registration failed, please try again!'
   } finally {
     loading.value = false
   }

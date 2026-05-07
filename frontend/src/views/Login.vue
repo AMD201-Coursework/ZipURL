@@ -7,21 +7,21 @@
         <span class="logo-text">ShortLink</span>
       </div>
 
-      <h2>Đăng nhập</h2>
-      <p class="sub">Chào mừng bạn trở lại!</p>
+      <h2>Login</h2>
+      <p class="sub">Welcome back!</p>
 
       <div class="form-group">
         <label>Email</label>
-        <input v-model="form.email" type="email" placeholder="Nhập email của bạn" />
+        <input v-model="form.email" type="email" placeholder="Enter your email" />
       </div>
 
       <div class="form-group">
-        <label>Mật khẩu</label>
+        <label>Password</label>
         <div class="password-wrapper">
           <input
             v-model="form.password"
             :type="showPassword ? 'text' : 'password'"
-            placeholder="Nhập mật khẩu"
+            placeholder="Enter your password"
           />
           <button type="button" class="eye-btn" @click="showPassword = !showPassword">
             <span v-if="showPassword">👁️</span>
@@ -30,21 +30,21 @@
         </div>
       </div>
 
-      <div v-if="error" class="error">⚠️ {{ error }}</div>
+      <div v-if="error" class="error">{{ error }}</div>
 
       <button class="btn-primary" @click="login" :disabled="loading">
         <span v-if="loading" class="spinner"></span>
-        <span>{{ loading ? 'Đang đăng nhập...' : 'Đăng nhập' }}</span>
+        <span>{{ loading ? 'Logging in...' : 'Login' }}</span>
       </button>
 
       <p class="switch">
-        Chưa có tài khoản?
-        <router-link to="/register">Đăng ký ngay</router-link>
+        Don't have an account?
+        <router-link to="/register">Sign up now</router-link>
       </p>
 
       <div class="divider"></div>
 
-      <router-link to="/" class="btn-home">← Quay về trang chủ</router-link>
+      <router-link to="/" class="btn-home">← Back to Home</router-link>
     </div>
   </div>
 </template>
@@ -70,7 +70,7 @@ async function login() {
     localStorage.setItem('role', res.data.role)
     router.push('/home')
   } catch (e) {
-    error.value = e.response?.data?.message || 'Email hoặc mật khẩu không đúng'
+    error.value = e.response?.data?.message || 'Incorrect email or password'
   } finally {
     loading.value = false
   }

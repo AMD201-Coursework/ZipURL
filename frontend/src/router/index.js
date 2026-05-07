@@ -5,8 +5,8 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
 const routes = [
-  { path: '/', component: Landing },      // Trang giới thiệu
-  { path: '/home', component: Home },     // Trang rút gọn link
+  { path: '/', component: Landing },      
+  { path: '/home', component: Home },     
   { path: '/login', component: Login },
   { path: '/register', component: Register },
 ]

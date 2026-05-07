@@ -2,11 +2,11 @@
   <div>
     <!-- NAV -->
     <nav class="navbar">
-      <router-link to="/" class="nav-logo">🔗 ShortLink</router-link>
+      <router-link to="/" class="nav-logo">🔗ShortLink</router-link>
       <div class="nav-links">
         <template v-if="!isLoggedIn">
-          <router-link to="/login" class="btn-outline">Đăng nhập</router-link>
-          <router-link to="/register" class="btn-primary">Đăng ký</router-link>
+          <router-link to="/login" class="btn-outline">Login</router-link>
+          <router-link to="/register" class="btn-primary">Sign Up</router-link>
         </template>
         <template v-else>
           <div class="user-badge">
@@ -14,7 +14,7 @@
             <span class="username">{{ username }}</span>
           </div>
           <button @click="logout" class="btn-logout">
-            <span>⏻</span> Đăng xuất
+            <span>⏻</span> Logout
           </button>
         </template>
       </div>
@@ -22,46 +22,46 @@
 
     <!-- HERO -->
     <div class="hero">
-      <h1>Rút gọn URL nhanh chóng</h1>
-      <p>Chuyển đổi đường link dài thành link ngắn gọn, dễ chia sẻ</p>
+      <h1>Shorten URLs instantly</h1>
+      <p>Turn long links into short, clean, and easy-to-share URLs</p>
 
       <!-- SHORT LINK BOX -->
       <div class="short-box">
         <input
           v-model="url"
           type="text"
-          placeholder="Dán URL dài vào đây..."
+          placeholder="Paste your long URL here..."
           class="url-input"
           @keyup.enter="handleShorten"
         />
         <button @click="handleShorten" class="btn-big" :disabled="loading">
           <span v-if="loading" class="spinner-dark"></span>
-          {{ loading ? 'Đang xử lý...' : 'Rút gọn ngay' }}
+          {{ loading ? 'Processing...' : 'Shorten Now' }}
         </button>
       </div>
 
-      <!-- CẢNH BÁO CHƯA ĐĂNG NHẬP -->
+      <!-- NOT LOGGED IN WARNING -->
       <div v-if="showWarning" class="warning-box">
-        ⚠️ Bạn cần <router-link to="/login">đăng nhập</router-link> để sử dụng tính năng này!
+         You need to <router-link to="/login">log in</router-link> to use this feature!
       </div>
 
-      <!-- LỖI -->
+      <!-- ERROR -->
       <div v-if="errorMsg" class="error-box">
-        ❌ {{ errorMsg }}
+         {{ errorMsg }}
       </div>
 
-      <!-- KẾT QUẢ SHORT LINK -->
+      <!-- SHORT LINK RESULT -->
       <div v-if="shortResult" class="result-box">
-        <p>🎉 Link rút gọn của bạn:</p>
+        <p> Your shortened link:</p>
         <div class="result-row">
           <a :href="shortResult" target="_blank" class="short-link">{{ shortResult }}</a>
-          <button @click="copyLink" class="btn-copy">{{ copied ? '✅ Đã copy' : '📋 Copy' }}</button>
+          <button @click="copyLink" class="btn-copy">{{ copied ? ' Copied' : ' Copy' }}</button>
         </div>
       </div>
 
-      <!-- DANH SÁCH LINK ĐÃ TẠO -->
+      <!-- CREATED LINKS LIST -->
       <div v-if="isLoggedIn && urls.length > 0" class="url-list">
-        <h3>📋 Các link đã tạo</h3>
+        <h3> Your shortened links</h3>
         <div
           v-for="item in urls"
           :key="item.id"
@@ -87,12 +87,12 @@
             class="btn-toggle"
             :class="item.isActive ? 'btn-toggle--on' : 'btn-toggle--off'"
             :disabled="item._toggling"
-            :title="item.isActive ? 'Đang bật – bấm để tắt' : 'Đang tắt – bấm để bật'"
+            :title="item.isActive ? 'Active – click to disable' : 'Inactive – click to enable'"
           >
             <span class="toggle-track">
               <span class="toggle-thumb"></span>
             </span>
-            <span class="toggle-label">{{ item.isActive ? 'Bật' : 'Tắt' }}</span>
+            <span class="toggle-label">{{ item.isActive ? 'On' : 'Off' }}</span>
           </button>
         </div>
       </div>
@@ -155,16 +155,16 @@ async function handleShorten() {
     url.value = ''
     await loadUrls()
   } catch (e) {
-    console.error('Lỗi rút gọn:', e.response?.data || e.message)
+    console.error('Shorten error:', e.response?.data || e.message)
     const status = e.response?.status
     if (status === 401) {
-      errorMsg.value = 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!'
+      errorMsg.value = 'Session expired, please log in again!'
       localStorage.removeItem('username')
       localStorage.removeItem('userId')
       isLoggedIn.value = false
       router.push('/login')
     } else {
-      errorMsg.value = e.response?.data?.message || 'Rút gọn thất bại, thử lại!'
+      errorMsg.value = e.response?.data?.message || 'Failed to shorten URL, please try again!'
     }
   } finally {
     loading.value = false
@@ -176,10 +176,10 @@ async function loadUrls() {
     const userId = localStorage.getItem('userId')
     if (!userId) return
     const res = await urlApi.get(`/shortcode/${userId}`)
-    // Thêm _toggling flag để quản lý loading state của từng nút
+    // Add _toggling flag to manage loading state per button
     urls.value = res.data.map(item => ({ ...item, _toggling: false }))
   } catch (e) {
-    console.error('Lỗi load URLs:', e)
+    console.error('Load URLs error:', e)
   }
 }
 
@@ -189,7 +189,7 @@ async function toggleStatus(item) {
     const res = await urlApi.patch(`/shortcode/${item.id}/status`)
     item.isActive = res.data.isActive
   } catch (e) {
-    console.error('Lỗi toggle status:', e)
+    console.error('Toggle status error:', e)
   } finally {
     item._toggling = false
   }
