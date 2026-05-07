@@ -18,17 +18,21 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZipURL_";
 });
+// ===== CORS =====
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("frontend1", policy =>
+    options.AddPolicy("frontend", policy =>
     {
         policy
             .WithOrigins(
                 "http://localhost:5173",
                 "https://zip-url-app.vercel.app")
+            .WithOrigins(allowedOrigins) 
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();  // B?T BU?C cho cookie cross-origin
+            .AllowCredentials();
     });
 });
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new ArgumentNullException("JWT Key is missing");
@@ -88,9 +92,9 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 app.UseRouting();
-app.UseCors("frontend1");
+app.UseCors("frontend");
 
-app.UseAuthentication(); // PHẢI NẰM TRƯỚC UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapShorterURLEndpoints();
