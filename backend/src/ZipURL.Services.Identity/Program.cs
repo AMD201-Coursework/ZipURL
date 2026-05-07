@@ -39,7 +39,8 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:5173",
                 "https://localhost:3000",
-                "https://zip-url-app.vercel.app")
+                "https://zip-url-app.vercel.app",
+                "https://zip-url-9velqzf6g-tatin3469-gmailcoms-projects.vercel.app")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

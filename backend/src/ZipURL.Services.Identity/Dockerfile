@@ -26,3 +26,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ZipURL.Services.Identity.dll"]
+
+ENV ASPNETCORE_URLS=http://0.0.0.0:10000
+ENV ASPNETCORE_ENVIRONMENT=Production
+EXPOSE 10000
