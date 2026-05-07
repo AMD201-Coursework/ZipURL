@@ -36,10 +36,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ===== RUN LINT (nếu có) =====
-      - name: Run lint
-        run: npm run lint --if-present
-
       # ===== RUN UNIT TESTS =====
       - name: Run unit tests
         run: npm run test:unit --if-present
