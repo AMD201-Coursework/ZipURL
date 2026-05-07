@@ -16,3 +16,15 @@ export const urlApi = axios.create({
   baseURL: import.meta.env.VITE_URL_API || 'https://localhost:7216/api',
   withCredentials: true,
 })
+
+// Tự động thêm Token vào Header cho các request
+const addAuthToken = (config) => {
+  const token = localStorage.getItem('accessToken')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+}
+
+authApi.interceptors.request.use(addAuthToken)
+urlApi.interceptors.request.use(addAuthToken)

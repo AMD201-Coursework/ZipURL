@@ -68,6 +68,7 @@ async function login() {
     localStorage.setItem('username', res.data.displayName)
     localStorage.setItem('userId', res.data.userId)
     localStorage.setItem('role', res.data.role)
+    localStorage.setItem('accessToken', res.data.accessToken) // Lưu token vào đây
     router.push('/home')
   } catch (e) {
     error.value = e.response?.data?.message || 'Incorrect email or password'
