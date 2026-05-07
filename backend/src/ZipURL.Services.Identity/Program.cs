@@ -41,8 +41,8 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:5173",
                 "https://localhost:3000",
-                "https://zip-url-dev.vercel.app")
-            .WithOrigins(allowedOrigins) // Thêm các URL từ biến môi trường
+                "https://zip-url-dev.vercel.app") // add vercel policy to Cors
+            .WithOrigins(allowedOrigins) 
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
