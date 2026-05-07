@@ -1,5 +1,9 @@
 name: Frontend CD Pipeline (Develop to Main Merge)
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false  # Không cancel CD đang chạy
+
 on:
   push:
     branches:
@@ -8,9 +12,9 @@ on:
       - 'frontend/**'
 
 jobs:
-  # ===== JOB 1: TEST LẠI LẦN NỮA =====
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: ./frontend
@@ -34,10 +38,10 @@ jobs:
       - name: Build app
         run: npm run build
 
-  # ===== JOB 2: BUILD & PUSH DOCKER =====
   build_and_push_docker:
     runs-on: ubuntu-latest
     needs: test
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -63,12 +67,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ===== JOB 3: DEPLOY PRODUCTION =====
   deploy_production:
     runs-on: ubuntu-latest
     needs: build_and_push_docker
+    timeout-minutes: 10
     steps:
-      # ===== DEPLOY TO VERCEL PRODUCTION =====
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -76,19 +79,19 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --cwd ./frontend --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Build project
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --cwd ./frontend --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Production
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --cwd ./frontend --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
