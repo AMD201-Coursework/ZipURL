@@ -31,6 +31,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ===== CORS =====
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("frontend", policy =>
@@ -39,8 +41,8 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:5173",
                 "https://localhost:3000",
-                "https://zip-url-app.vercel.app",
-                "https://zip-url-9velqzf6g-tatin3469-gmailcoms-projects.vercel.app")
+                "https://zip-url-app.vercel.app")
+            .WithOrigins(allowedOrigins) // Thêm các URL từ biến môi trường
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
