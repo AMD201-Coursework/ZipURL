@@ -4,15 +4,16 @@
     {
         public static IEndpointRouteBuilder MapShorterURLEndpoints(this IEndpointRouteBuilder app)
         {
+            // Create short code group endpoint
             var group = app.MapGroup("/api/shortcode");
 
-            // Create
+            // Create short code
             ShortenURLFeature.CreateShortCode.Endpoint.Map(group);
 
-            // Get URLs 
+            // Get urls of user
             ShortenURLFeature.GetUserURLs.Endpoint.Map(group);
 
-            // Change Url Status 
+            // Change url status
             ShortenURLFeature.ChangeUrlStatus.Endpoint.Map(group);
 
             // Redirect

@@ -8,6 +8,7 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.ChangeUrlStatus
     {
         public static void Map(IEndpointRouteBuilder group)
         {
+            // Change url status endpoint
             group.MapPatch("/{id}/status", async (int id, URLAppDbContext db, IDistributedCache cache) =>
             {
                 var urlItem = await db.URLItems.FindAsync(id);
@@ -18,7 +19,7 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.ChangeUrlStatus
                 urlItem.IsActive = !urlItem.IsActive;
                 await db.SaveChangesAsync();
 
-                // Xóa cache cũ để Redirect endpoint đọc trạng thái mới từ DB
+                // Remove cache to redirect endpoint read new status from DB
                 if (!string.IsNullOrEmpty(urlItem.ShortCode))
                     await cache.RemoveAsync(urlItem.ShortCode);
 

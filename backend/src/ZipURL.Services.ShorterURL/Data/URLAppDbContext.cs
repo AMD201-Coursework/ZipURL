@@ -16,12 +16,15 @@ namespace ZipURL.Services.ShorterURL.Data
         {
             modelBuilder.Entity<URLItem>(entity =>
             {
-
+                // Index by user
                 entity.HasIndex(e => e.UserId);
 
+                // Index by short code for fast lookup, and unique constraint
                 entity.HasIndex(u => u.ShortCode)
                       .IsUnique();
 
+                // Short code is required but can be null (auto-generated if null)
+                // Max length 10 for custom short codes
                 entity.Property(u => u.ShortCode)
                       .IsRequired(false)
                       .HasMaxLength(10);
