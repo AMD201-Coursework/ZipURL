@@ -41,7 +41,7 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:5173",
                 "https://localhost:3000",
-                "https://zip-url-dev.vercel.app") // add vercel policy to Cors
+                "https://zip-url-app.vercel.app") // add vercel policy to Cors
             .WithOrigins(allowedOrigins) 
             .AllowAnyHeader()
             .AllowAnyMethod()
