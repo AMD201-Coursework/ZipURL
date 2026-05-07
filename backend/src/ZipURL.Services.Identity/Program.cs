@@ -88,6 +88,15 @@ builder.Services.AddAuthorization();
 // ===== Build app =====
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    await next();
+    if (context.Response.StatusCode == 200)
+    {
+        Console.WriteLine($"[SUCCESS] Request: {context.Request.Path} | Status: 200");
+    }
+});
+
 // ===== Middleware pipeline =====
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
