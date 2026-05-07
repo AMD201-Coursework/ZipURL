@@ -1,4 +1,4 @@
-﻿namespace ZipURL.Services.Identity.DTOs.Responses;
+namespace ZipURL.Services.Identity.DTOs.Responses;
 
 /// <summary>
 /// Trả về sau khi login/register/refresh thành công
@@ -10,5 +10,6 @@ public class AuthResponse
     public string Email { get; set; } = default!;
     public string DisplayName { get; set; } = default!;
     public string Role { get; set; } = default!;
+    public string AccessToken { get; set; } = default!;
     public DateTime AccessTokenExpiresAt { get; set; }
 }

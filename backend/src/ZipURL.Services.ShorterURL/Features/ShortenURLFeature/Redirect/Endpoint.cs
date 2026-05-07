@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using ZipURL.Services.ShorterURL.Data;
 using ZipURL.Services.ShorterURL.Helpers;
@@ -14,16 +14,19 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.Redirect
                 URLAppDbContext db,
                 IDistributedCache cache) =>
             {
-                // 1. KIỂM TRA REDIS
-                string cachedUrl = await cache.GetStringAsync(shortCode);
-                if (!string.IsNullOrEmpty(cachedUrl))
+                // 1. KIỂM TRA REDIS (Bọc try-catch để nếu Redis lỗi vẫn chạy tiếp được)
+                try 
                 {
-                    // Cache lưu "DISABLED" nếu link đang tắt
-                    if (cachedUrl == "DISABLED")
-                        return Results.NotFound(new { message = "Link này đã bị tắt." });
+                    string cachedUrl = await cache.GetStringAsync(shortCode);
+                    if (!string.IsNullOrEmpty(cachedUrl))
+                    {
+                        if (cachedUrl == "DISABLED")
+                            return Results.NotFound(new { message = "Link này đã bị tắt." });
 
-                    return Results.Redirect(cachedUrl);
+                        return Results.Redirect(cachedUrl);
+                    }
                 }
+                catch { /* Bỏ qua lỗi Redis, tiếp tục kiểm tra DB */ }
 
                 // 2. GIẢI MÃ SHORTCODE
                 var id = HashidHelper.Decode(shortCode);

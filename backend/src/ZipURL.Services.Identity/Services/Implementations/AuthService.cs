@@ -1,4 +1,4 @@
-﻿using ZipURL.Services.Identity.Common;
+using ZipURL.Services.Identity.Common;
 using ZipURL.Services.Identity.Data;
 using ZipURL.Services.Identity.DTOs.Requests;
 using ZipURL.Services.Identity.DTOs.Responses;
@@ -165,6 +165,7 @@ public class AuthService : IAuthService
             Email = user.Email,
             DisplayName = user.DisplayName,
             Role = user.Role,
+            AccessToken = accessToken,
             AccessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwt.AccessTokenMinutes)
         };
 
