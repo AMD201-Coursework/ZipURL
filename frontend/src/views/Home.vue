@@ -117,7 +117,8 @@ const loading = ref(false)
 const errorMsg = ref('')
 const router = useRouter()
 
-const SHORT_BASE_URL = import.meta.env.VITE_SHORT_BASE_URL || 'https://localhost:7216'
+const apiUrl = import.meta.env.VITE_URL_API || 'https://localhost:7216/api'
+const SHORT_BASE_URL = apiUrl.replace(/\/api$/, '')
 
 function buildShortUrl(shortCode) {
   return `${SHORT_BASE_URL}/${shortCode}`
