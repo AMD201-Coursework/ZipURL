@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipURL.Services.Identity", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipURL.Services.ShorterURL", "src\ZipURL.Services.ShorterURL\ZipURL.Services.ShorterURL.csproj", "{282019F1-B1E7-457B-B9A7-DBCC91CAEA75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipURL.Tests", "ZipURL.Tests\ZipURL.Tests.csproj", "{7BE14EC4-2D90-47B8-8D04-EB362F575D2B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{282019F1-B1E7-457B-B9A7-DBCC91CAEA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{282019F1-B1E7-457B-B9A7-DBCC91CAEA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{282019F1-B1E7-457B-B9A7-DBCC91CAEA75}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BE14EC4-2D90-47B8-8D04-EB362F575D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BE14EC4-2D90-47B8-8D04-EB362F575D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BE14EC4-2D90-47B8-8D04-EB362F575D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BE14EC4-2D90-47B8-8D04-EB362F575D2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
