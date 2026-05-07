@@ -90,10 +90,16 @@ var app = builder.Build();
 
 app.Use(async (context, next) =>
 {
+    // Ghi lại thời gian bắt đầu request
+    var startTime = DateTime.UtcNow;
+    
     await next();
-    if (context.Response.StatusCode == 200)
+
+    // Kiểm tra nếu Status code nằm trong khoảng 200-299 (Thành công)
+    if (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)
     {
-        Console.WriteLine($"[SUCCESS] Request: {context.Request.Path} | Status: 200");
+        var elapsed = DateTime.UtcNow - startTime;
+        Console.WriteLine($"✅ [SUCCESS] {context.Request.Method} {context.Request.Path} | Status: {context.Response.StatusCode} | Time: {elapsed.TotalMilliseconds}ms");
     }
 });
 
