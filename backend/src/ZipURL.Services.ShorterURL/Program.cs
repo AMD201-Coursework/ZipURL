@@ -8,29 +8,35 @@ using ZipURL.Services.ShorterURL.Features;
     
 var builder = WebApplication.CreateBuilder(args);
 
-// Database SQL Server 
+// Database Postgres Neon
 builder.Services.AddDbContext<URLAppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Redis
+// Redis Upstash
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZipURL_";
 });
+// CORS
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("frontend1", policy =>
+    options.AddPolicy("frontend", policy =>
     {
         policy
             .WithOrigins(
-                "http://localhost:5173",
-                "https://zip-url-app.vercel.app")
+                "http://localhost:5173",                // local policy for frontend
+                "https://zip-url-app.vercel.app")      // add vercel policy to Cors
+            .WithOrigins(allowedOrigins)                // add other allowed origins
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();  // B?T BU?C cho cookie cross-origin
+            .AllowCredentials();
     });
 });
+
+// JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new ArgumentNullException("JWT Key is missing");
 builder.Services.AddAuthentication(options =>
 {
@@ -51,7 +57,7 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // ĐỌC TOKEN TỪ COOKIE "access_token"
+    // Read token from cookie
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -66,14 +72,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization(); // Thêm dòng này
+// Authorization
+builder.Services.AddAuthorization(); 
 
-// ===== CORS =====
-
-
-// Add services to the container.
+// Services
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
@@ -88,15 +92,16 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 app.UseRouting();
-app.UseCors("frontend1");
+app.UseCors("frontend");
 
-app.UseAuthentication(); // PHẢI NẰM TRƯỚC UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapShorterURLEndpoints();
 
 app.MapControllers();
 
+// Database migration
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<URLAppDbContext>();
