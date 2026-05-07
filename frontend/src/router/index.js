@@ -1,15 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Landing from '../views/Landing.vue'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', component: Landing },      // Trang giới thiệu
+  { path: '/home', component: Home },     // Trang rút gọn link
   { path: '/login', component: Login },
   { path: '/register', component: Register },
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+export default router
