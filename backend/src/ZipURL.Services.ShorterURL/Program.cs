@@ -62,15 +62,19 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Read token from cookie
+    // Read token from header or cookie
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
         {
-            var token = context.Request.Cookies["access_token"];
-            if (!string.IsNullOrEmpty(token))
+            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
             {
-                context.Token = token;
+                context.Token = authHeader.Substring("Bearer ".Length).Trim();
+            }
+            else
+            {
+                context.Token = context.Request.Cookies["access_token"];
             }
             return Task.CompletedTask;
         }
