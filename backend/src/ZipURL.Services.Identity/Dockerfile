@@ -1,13 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj từ thư mục hiện tại (vì Dockerfile đã ở trong ZipURL.Services.Identity/)
-COPY *.csproj ./
-RUN dotnet restore
+# Copy csproj với tên cụ thể (an toàn nhất)
+COPY ["ZipURL.Services.Identity.csproj", "ZipURL.Services.Identity.csproj"]
+RUN dotnet restore "ZipURL.Services.Identity.csproj"
 
-# Copy toàn bộ source từ thư mục hiện tại
+# Copy tất cả source code
 COPY . .
-RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "ZipURL.Services.Identity.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
