@@ -1,0 +1,67 @@
+name: Backend CI Pipeline (Feature to Develop PR)
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'src/**'
+      - 'ZipURL.Tests/**'
+      - 'ZipURLSystem.sln'
+  pull_request:
+    branches:
+      - develop
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/**'
+      - 'ZipURL.Tests/**'
+      - 'ZipURLSystem.sln'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      # ===== CHECKOUT CODE =====
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ===== SETUP .NET =====
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # ===== RESTORE DEPENDENCIES =====
+      - name: Restore dependencies
+        run: dotnet restore ZipURLSystem.sln
+
+      # ===== BUILD =====
+      - name: Build solution
+        run: dotnet build ZipURLSystem.sln --configuration Release --no-restore
+
+      # ===== RUN TESTS =====
+      - name: Run tests
+        run: dotnet test ZipURL.Tests/ZipURL.Tests.csproj --configuration Release --no-build --verbosity normal
+
+  deploy_preview:
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    steps:
+      # ===== CHECKOUT CODE =====
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ===== DEPLOY IDENTITY SERVICE TO RENDER (Preview) =====
+      - name: Deploy Identity Service to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_IDENTITY_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+
+      # ===== DEPLOY SHORTER URL SERVICE TO RENDER (Preview) =====
+      - name: Deploy ShorterURL Service to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SHORTERURL_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
