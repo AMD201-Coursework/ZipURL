@@ -3,6 +3,6 @@
     public record CreateShortCodeResponse(
         string ShortCode,
         string OriginalUrl,
-        DateTime CreaetAt
+        DateTime CreateAt
         );
 }
