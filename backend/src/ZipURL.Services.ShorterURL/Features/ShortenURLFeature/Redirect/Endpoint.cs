@@ -14,44 +14,44 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.Redirect
                 URLAppDbContext db,
                 IDistributedCache cache) =>
             {
-                // 1. KIỂM TRA REDIS
+                // Check REDIS
                 string cachedUrl = await cache.GetStringAsync(shortCode);
                 if (!string.IsNullOrEmpty(cachedUrl))
                 {
-                    // Cache lưu "DISABLED" nếu link đang tắt
+                    // Cache save "DISABLED" if link is disabled
                     if (cachedUrl == "DISABLED")
-                        return Results.NotFound(new { message = "Link này đã bị tắt." });
+                        return Results.NotFound(new { message = "Link is disabled." });
 
                     return Results.Redirect(cachedUrl);
                 }
 
-                // 2. GIẢI MÃ SHORTCODE
+                // Decode ShortCode
                 var id = HashidHelper.Decode(shortCode);
                 if (id <= 0)
-                    return Results.NotFound(new { message = "Mã rút gọn không hợp lệ hoặc không tồn tại." });
+                    return Results.NotFound(new { message = "Invalid or non-existent shortcode." });
 
-                // 3. TRUY VẤN DATABASE
+                // Query DATABASE
                 var urlItem = await db.URLItems.FindAsync(id);
                 if (urlItem == null)
-                    return Results.NotFound(new { message = "Đường dẫn không tồn tại trên hệ thống." });
+                    return Results.NotFound(new { message = "URL does not exist on the system." });
 
-                // 4. KIỂM TRA IsActive
+                // Check IsActive
                 if (!urlItem.IsActive)
                 {
-                    // Cache trạng thái disabled 1 giờ để tránh DB query liên tục
+                    // Cache disabled 1 hour to avoid DB query
                     var disabledOptions = new DistributedCacheEntryOptions()
                         .SetAbsoluteExpiration(TimeSpan.FromHours(1));
                     await cache.SetStringAsync(shortCode, "DISABLED", disabledOptions);
 
-                    return Results.NotFound(new { message = "Link này đã bị tắt." });
+                    return Results.NotFound(new { message = "Link is disabled." });
                 }
 
-                // 5. CẬP NHẬT CACHE
+                // Cache new URL
                 var cacheOptions = new DistributedCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromDays(3));
                 await cache.SetStringAsync(shortCode, urlItem.OriginalUrl, cacheOptions);
 
-                // 6. ĐIỀU HƯỚNG
+                // Redirect
                 return Results.Redirect(urlItem.OriginalUrl);
             })
             .WithName("RedirectToOriginal");

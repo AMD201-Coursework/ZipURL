@@ -14,24 +14,23 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
 
         public static void Map(IEndpointRouteBuilder group)
         {
-            // Thêm .RequireAuthorization() để đảm bảo chỉ người dùng có Token mới gọi được
             group.MapPost("/", async (
                 CreateShortCodeRequest req,
                 URLAppDbContext db,
                 IDistributedCache cache,
-                ClaimsPrincipal user, // Lấy thông tin user từ Token
+                // ClaimsPrincipal user,
                 [FromServices] IHttpClientFactory httpClientFactory) =>
             {
-                // --- 1. LẤY USERID TỪ CLAIMS ---
+                // Get User Id
                 var userId = req.UserId;
 
-                // 2. Format url check
+                // Format url check
                 if (string.IsNullOrWhiteSpace(req.TargetUrl) || !Uri.TryCreate(req.TargetUrl, UriKind.Absolute, out var uriResult))
                 {
                     return Results.BadRequest(new { message = "Invalid URL format." });
                 }
 
-                // 3. CHECK REDIS (Dùng URL dài làm Key để tránh duplicate cache)
+                // Check REDIS
                 string originKey = $"origin:{req.TargetUrl}";
                 string existingShortCode = await cache.GetStringAsync(originKey);
 
@@ -44,7 +43,7 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                     });
                 }
 
-                // 4. Kiểm tra URL tồn tại (HEAD request)
+                // HEAD request
                 try
                 {
                     var client = httpClientFactory.CreateClient();
@@ -66,7 +65,7 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                     return Results.Conflict(new { message = "Already shortened.", shortCode = existingLink.ShortCode });
                 }
 
-                // 6. Tạo thực thể (Gán userId vào đây)
+                // Create url item
                 var urlItem = new URLItem
                 {
                     OriginalUrl = req.TargetUrl,
@@ -78,6 +77,7 @@ namespace ZipURL.Services.ShorterURL.Features.ShortenURLFeature.CreateShortCode
                 db.URLItems.Add(urlItem);
                 await db.SaveChangesAsync();
 
+                // HashId encode
                 urlItem.ShortCode = HashidHelper.Encode(urlItem.Id);
                 await db.SaveChangesAsync();
 
