@@ -1,4 +1,4 @@
-﻿namespace ZipURL.Services.ShorterURL.Features
+namespace ZipURL.Services.ShorterURL.Features
 {
     public static class Endpoints
     {
