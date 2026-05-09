@@ -75,12 +75,12 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
 
-        // ĐỌC TOKEN TỪ COOKIE thay vì Header
+        //READ TOKEN FROM COOKIE instead of Header
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
             {
-                // Ưu tiên đọc từ cookie
+                // Prioritize reading from cookie
                 var token = context.Request.Cookies["access_token"];
                 if (!string.IsNullOrEmpty(token))
                 {

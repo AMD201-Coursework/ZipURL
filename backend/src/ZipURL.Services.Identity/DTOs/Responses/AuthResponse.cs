@@ -1,9 +1,5 @@
 ﻿namespace ZipURL.Services.Identity.DTOs.Responses;
 
-/// <summary>
-/// Trả về sau khi login/register/refresh thành công
-/// Token thực tế nằm trong cookie, response chỉ chứa metadata
-/// </summary>
 public class AuthResponse
 {
     public int UserId { get; set; } = default!;

@@ -31,4 +31,4 @@ COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS=http://0.0.0.0:10000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "ZipURL.Services.Identity.dll"]
+ENTRYPOINT ["dotnet", "ZipURL.Services.Identity.dll"]

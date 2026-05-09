@@ -1,9 +1,8 @@
 ﻿namespace ZipURL.Services.Identity.Common;
 
-/// <summary>
-/// Helper để set/xóa token cookie
-/// Tập trung logic cookie vào 1 chỗ
-/// </summary>
+/// Helper to set/clear token cookies
+/// Centralizes cookie logic in one place
+
 public static class CookieTokenHelper
 {
     private const string AccessTokenCookie = "access_token";
@@ -19,9 +18,9 @@ public static class CookieTokenHelper
         // Access token cookie
         response.Cookies.Append(AccessTokenCookie, accessToken, new CookieOptions
         {
-            HttpOnly = true,       // JS không đọc được → chống XSS
-            Secure = true,         // Chỉ gửi qua HTTPS
-            SameSite = SameSiteMode.None, // Cho phép cross-site (frontend ≠ backend domain)
+            HttpOnly = true,       // JS cannot read → prevents XSS
+            Secure = true,         // Only sent over HTTPS
+            SameSite = SameSiteMode.None, // Allows cross-site (frontend ≠ backend domain)
             Expires = DateTimeOffset.UtcNow.AddMinutes(accessTokenMinutes),
             Path = "/"
         });
@@ -33,7 +32,7 @@ public static class CookieTokenHelper
             Secure = true,
             SameSite = SameSiteMode.None,
             Expires = DateTimeOffset.UtcNow.AddDays(refreshTokenDays),
-            Path = "/api/auth"     // Chỉ gửi khi gọi auth endpoint
+            Path = "/api/auth"     // Only send when calling auth endpoint
         });
     }
 

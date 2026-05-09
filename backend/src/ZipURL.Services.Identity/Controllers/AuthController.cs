@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     {
         var (response, accessToken, refreshToken) = await _authService.RegisterAsync(request);
 
-        // Set token vào cookie
+        // Set token into cookie
         CookieTokenHelper.SetTokenCookies(
             Response, accessToken, refreshToken,
             _jwt.AccessTokenMinutes, _jwt.RefreshTokenDays);
@@ -54,12 +54,11 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<ActionResult<AuthResponse>> Refresh()
     {
-        // Đọc refresh token từ cookie
+        // read refresh token from cookie
         var refreshToken = CookieTokenHelper.GetRefreshToken(Request);
 
         if (string.IsNullOrEmpty(refreshToken))
-            return Unauthorized(new { error = "Không tìm thấy refresh token" });
-
+            return Unauthorized(new { error = "Refresh token not found" });
         var (response, newAccessToken, newRefreshToken) =
             await _authService.RefreshAsync(refreshToken);
 
@@ -74,13 +73,13 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        // Đọc refresh token từ cookie
+        // read refresh token from cookie
         var refreshToken = CookieTokenHelper.GetRefreshToken(Request);
 
-        // Revoke trong DB
+        // Revoke in DB
         await _authService.LogoutAsync(refreshToken ?? "");
 
-        // Xóa cookie
+        // Clear cookie
         CookieTokenHelper.ClearTokenCookies(Response);
 
         return NoContent();

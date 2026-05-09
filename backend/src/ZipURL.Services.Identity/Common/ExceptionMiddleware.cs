@@ -3,10 +3,8 @@ using System.Text.Json;
 
 namespace ZipURL.Services.Identity.Common;
 
-/// <summary>
-/// Middleware bắt exception toàn cục
-/// Tránh lộ stack trace ra client
-/// </summary>
+/// Middleware for global exception handling
+
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -26,7 +24,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (ApplicationException ex)
         {
-            // Lỗi do logic nghiệp vụ (mình throw)
+            // Business logic error (thrown by us)
             _logger.LogWarning(ex, "Business error");
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
@@ -36,12 +34,12 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            // Lỗi không mong đợi
+            // Unexpected error
             _logger.LogError(ex, "Unexpected error");
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var response = JsonSerializer.Serialize(new { error = "Đã xảy ra lỗi hệ thống" });
+            var response = JsonSerializer.Serialize(new { error = "Error occurred in the system" });
             await context.Response.WriteAsync(response);
         }
     }

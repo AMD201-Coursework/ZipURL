@@ -39,14 +39,14 @@ public class AuthService : IAuthService
     private async Task<(AuthResponse Response, string AccessToken, string RefreshToken)>
         RegisterAsyncImpl(RegisterRequest request)
     {
-        // 1. Kiểm tra email đã tồn tại chưa
+        // 1. check if email already exists
         var emailExists = await _db.Users
             .AnyAsync(u => u.Email == request.Email);
 
         if (emailExists)
             throw new ApplicationException("Email đã được sử dụng");
 
-        // 2. Tạo user mới
+        // 2. Create new user
         var user = new User
         {
             Email = request.Email.Trim().ToLower(),
@@ -57,11 +57,11 @@ public class AuthService : IAuthService
         // 3. Hash password
         user.PasswordHash = _hasher.HashPassword(user, request.Password);
 
-        // 4. Lưu user
+        // 4. Save user
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
 
-        // 5. Tạo token và trả về
+        // 5. Create token and return
         return await IssueTokensAsync(user);
     }
 
@@ -69,7 +69,7 @@ public class AuthService : IAuthService
     public async Task<(AuthResponse Response, string AccessToken, string RefreshToken)>
         LoginAsync(LoginRequest request)
     {
-        // 1. Tìm user
+        // 1. Find user by email
         var user = await _db.Users
             .FirstOrDefaultAsync(u => u.Email == request.Email.Trim().ToLower());
 
@@ -83,7 +83,7 @@ public class AuthService : IAuthService
         if (result == PasswordVerificationResult.Failed)
             throw new ApplicationException("Email hoặc mật khẩu không đúng");
 
-        // 3. Tạo token và trả về
+        // 3. Create token and return
         return await IssueTokensAsync(user);
     }
 
@@ -91,10 +91,10 @@ public class AuthService : IAuthService
     public async Task<(AuthResponse Response, string AccessToken, string RefreshToken)>
         RefreshAsync(string refreshToken)
     {
-        // 1. Hash token gửi lên để so sánh với DB
+        // 1. Hash token send to DB for comparison
         var tokenHash = _tokenService.HashToken(refreshToken);
 
-        // 2. Tìm refresh token hợp lệ
+        // 2. Find valid refresh token
         var storedToken = await _db.RefreshTokens
             .Include(rt => rt.User)
             .FirstOrDefaultAsync(rt =>
@@ -105,10 +105,10 @@ public class AuthService : IAuthService
         if (storedToken == null)
             throw new ApplicationException("Refresh token không hợp lệ hoặc đã hết hạn");
 
-        // 3. Revoke token cũ
+        // 3. Revoke old token
         storedToken.RevokedAt = DateTime.UtcNow;
 
-        // 4. Cấp token mới
+        // 4. new token pair
         var result = await IssueTokensAsync(storedToken.User);
 
         await _db.SaveChangesAsync();
@@ -136,17 +136,17 @@ public class AuthService : IAuthService
         }
     }
 
-    // ===== HELPER: Tạo cặp token mới =====
+    // ===== HELPER: create token pair =====
     private async Task<(AuthResponse Response, string AccessToken, string RefreshToken)>
         IssueTokensAsync(User user)
     {
-        // Tạo access token
+        // Create access token
         var accessToken = _tokenService.CreateAccessToken(user);
 
-        // Tạo refresh token
+        // Create refresh token
         var rawRefreshToken = _tokenService.CreateRefreshToken();
 
-        // Lưu refresh token vào DB (hash)
+        // Save refresh token to DB (hash)
         var refreshEntity = new RefreshToken
         {
             Id = Guid.NewGuid(),
@@ -158,7 +158,7 @@ public class AuthService : IAuthService
         _db.RefreshTokens.Add(refreshEntity);
         await _db.SaveChangesAsync();
 
-        // Tạo response
+        // Create response
         var response = new AuthResponse
         {
             UserId = user.Id,
